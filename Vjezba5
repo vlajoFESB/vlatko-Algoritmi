@@ -1,0 +1,121 @@
+#define _CRT_SECURE_NO_WARNINGS
+#include <stdio.h>
+#include <stdlib.h>
+
+typedef struct Cvor {
+    int broj;
+    struct Cvor* sljedeci;
+} Cvor;
+
+Cvor* dodajNaPocetak(Cvor* glava, int vrijednost) {
+    Cvor* novi = (Cvor*)malloc(sizeof(Cvor));
+    novi->broj = vrijednost;
+    novi->sljedeci = glava;
+    return novi;
+}
+
+Cvor* okreniListu(Cvor* glava) {
+    Cvor* prethodni = NULL;
+    Cvor* trenutni = glava;
+    Cvor* sljedeci = NULL;
+
+    while (trenutni != NULL) {
+        sljedeci = trenutni->sljedeci;
+        trenutni->sljedeci = prethodni;
+        prethodni = trenutni;
+        trenutni = sljedeci;
+    }
+    return prethodni;
+}
+
+Cvor* unijaListi(Cvor* L1, Cvor* L2) {
+    Cvor* rezultat = NULL;
+
+    while (L1 != NULL && L2 != NULL) {
+        if (L1->broj < L2->broj) {
+            rezultat = dodajNaPocetak(rezultat, L1->broj);
+            L1 = L1->sljedeci;
+        }
+        else if (L2->broj < L1->broj) {
+            rezultat = dodajNaPocetak(rezultat, L2->broj);
+            L2 = L2->sljedeci;
+        }
+        else {
+            rezultat = dodajNaPocetak(rezultat, L1->broj);
+            L1 = L1->sljedeci;
+            L2 = L2->sljedeci;
+        }
+    }
+
+    while (L1 != NULL) {
+        rezultat = dodajNaPocetak(rezultat, L1->broj);
+        L1 = L1->sljedeci;
+    }
+
+    while (L2 != NULL) {
+        rezultat = dodajNaPocetak(rezultat, L2->broj);
+        L2 = L2->sljedeci;
+    }
+
+    return okreniListu(rezultat);
+}
+
+Cvor* presjekListi(Cvor* L1, Cvor* L2) {
+    Cvor* rezultat = NULL;
+
+    while (L1 != NULL && L2 != NULL) {
+        if (L1->broj < L2->broj) {
+            L1 = L1->sljedeci;
+        }
+        else if (L2->broj < L1->broj) {
+            L2 = L2->sljedeci;
+        }
+        else {
+            rezultat = dodajNaPocetak(rezultat, L1->broj);
+            L1 = L1->sljedeci;
+            L2 = L2->sljedeci;
+        }
+    }
+
+    return okreniListu(rezultat);
+}
+
+void ispisiListu(Cvor* glava) {
+    while (glava != NULL) {
+        printf("%d -> ", glava->broj);
+        glava = glava->sljedeci;
+    }
+    printf("NULL\n");
+}
+
+int main() {
+    Cvor* L1 = NULL, * L2 = NULL;
+    int n, broj;
+
+    printf("Unesite broj elemenata liste L1: ");
+    scanf("%d", &n);
+    for (int i = 0; i < n; i++) {
+        scanf("%d", &broj);
+        L1 = dodajNaPocetak(L1, broj);
+    }
+    L1 = okreniListu(L1);
+
+    printf("Unesite broj elemenata liste L2: ");
+    scanf("%d", &n);
+    for (int i = 0; i < n; i++) {
+        scanf("%d", &broj);
+        L2 = dodajNaPocetak(L2, broj);
+    }
+    L2 = okreniListu(L2);
+
+    Cvor* unija = unijaListi(L1, L2);
+    Cvor* presjek = presjekListi(L1, L2);
+
+    printf("\nUnija: ");
+    ispisiListu(unija);
+
+    printf("Presjek: ");
+    ispisiListu(presjek);
+
+    return 0;
+}
